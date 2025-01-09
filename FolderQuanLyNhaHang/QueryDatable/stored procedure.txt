@@ -1,0 +1,55 @@
+CREATE PROC USP_Login
+@userNam nvarchar(100), @passWord nvarchar(100)
+AS
+BEGIN
+	SELECT * FORM Acount WHERE UserName = @userNam AND PassWord = @passWord
+END
+GO
+
+CREATE PROC USP_GetTableList
+AS
+SELECT * FROM TableFood
+GO
+
+-------------------------------------------------------------------------------
+
+ALTER PROC USP_InsertBillInfo
+@idBill int, @idFood Int, @count int
+as
+BEGIN
+	DECLARE @isExitsBillInfo int
+	DECLARE @foodCount int = 1
+
+	SELECT @isExitsBillInfo = ID, @foodCount = b.count 
+	from foodinfo as b
+	where idbill = @idBill and idfood = @idFood
+	
+	if(@isExitsBillInfo>0)
+	begin
+		Declare @newCount int = @foodCount + @count
+		if(@newCount > 0 )
+			update billinfo set count = @newCount where idBill = @idBill and idFood = @idFood
+		else
+			delete Billinfo where idBill = @idBill and idFood = @idFood
+
+	end
+	else
+	begin
+		INSERT BILLINFO
+		(
+			IDBILL,
+			IDFOOD,
+			COUNT
+		)
+		VALUES
+		(
+			@idBil,
+			@idFood,
+			@count
+		)
+	end
+
+
+	
+END
+GO
